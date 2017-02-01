@@ -15,6 +15,17 @@ const (
 	zincBaseURL = "https://api.zinc.io/v1"
 )
 
+type Retailer string
+
+const (
+	Amazon     Retailer = "amazon"
+	AmazonUK   Retailer = "amazon_uk"
+	AmazonCA   Retailer = "amazon_ca"
+	AmazonMX   Retailer = "amazon_mx"
+	Walmart    Retailer = "walmart"
+	Aliexpress Retailer = "aliexpress"
+)
+
 type Zinc struct {
 	ClientToken string
 	ZincBaseURL string
@@ -60,7 +71,7 @@ type ProductOptions struct {
 	NewerThan time.Time `json:"newer_than"`
 }
 
-func (z Zinc) GetProductDetails(productId, retailer string, options ProductOptions) (*ProductDetailsResponse, error) {
+func (z Zinc) GetProductDetails(productId string, retailer Retailer, options ProductOptions) (*ProductDetailsResponse, error) {
 	values := url.Values{}
 	values.Set("retailer", retailer)
 	if options.MaxAge != 0 {
