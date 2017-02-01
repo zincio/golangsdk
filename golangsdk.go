@@ -73,7 +73,7 @@ type ProductOptions struct {
 
 func (z Zinc) GetProductDetails(productId string, retailer Retailer, options ProductOptions) (*ProductDetailsResponse, error) {
 	values := url.Values{}
-	values.Set("retailer", retailer)
+	values.Set("retailer", string(retailer))
 	if options.MaxAge != 0 {
 		values.Set("max_age", strconv.Itoa(options.MaxAge))
 	}
