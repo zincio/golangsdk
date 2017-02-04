@@ -60,7 +60,7 @@ type ProductOffer struct {
 	BuyBoxWinner         bool            `json:"buy_box_winner"`
 	International        bool            `json:"international"`
 	OfferId              string          `json:"offer_id"`
-	Price                string          `json:"price"`
+	Price                int             `json:"price"`
 }
 
 type ShippingOptions struct {
