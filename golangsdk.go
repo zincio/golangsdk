@@ -27,8 +27,7 @@ const (
 )
 
 var DefaultProductOptions = ProductOptions{
-	MaxAge:  600,
-	Timeout: time.Duration(time.Second * 60),
+	Timeout: time.Duration(time.Second * 90),
 }
 
 type Zinc struct {
