@@ -26,6 +26,11 @@ const (
 	Aliexpress Retailer = "aliexpress"
 )
 
+var DefaultProductOptions = ProductOptions{
+	MaxAge:  600,
+	Timeout: time.Duration(time.Second * 60),
+}
+
 type Zinc struct {
 	ClientToken string
 	ZincBaseURL string
@@ -110,8 +115,37 @@ type ErrorDataResponse struct {
 }
 
 type ProductOptions struct {
-	MaxAge    int       `json:"max_age"`
-	NewerThan time.Time `json:"newer_than"`
+	MaxAge    int           `json:"max_age"`
+	NewerThan time.Time     `json:"newer_than"`
+	Timeout   time.Duration `json:"timeout"`
+}
+
+func (z Zinc) GetProductInfo(productId string, retailer Retailer, options ProductOptions) (*ProductOffersResponse, *ProductDetailsResponse, error) {
+	offersChan := make(chan *ProductOffersResponse, 1)
+	detailsChan := make(chan *ProductDetailsResponse, 1)
+	errorsChan := make(chan error, 2)
+
+	go func() {
+		offers, err := z.GetProductOffers(productId, retailer, options)
+		errorsChan <- err
+		offersChan <- offers
+	}()
+
+	go func() {
+		details, err := z.GetProductDetails(productId, retailer, options)
+		errorsChan <- err
+		detailsChan <- details
+	}()
+
+	offers := <-offersChan
+	details := <-detailsChan
+	for i := 0; i < 2; i++ {
+		err := <-errorsChan
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	return offers, details, nil
 }
 
 func (z Zinc) GetProductOffers(productId string, retailer Retailer, options ProductOptions) (*ProductOffersResponse, error) {
@@ -126,7 +160,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	}
 	requestPath := fmt.Sprintf("%v/products/%v?%v", z.ZincBaseURL, productId, values.Encode())
 
-	respBody, err := z.sendGetRequest(requestPath)
+	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +185,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	}
 	requestPath := fmt.Sprintf("%v/products/%v?%v", z.ZincBaseURL, productId, values.Encode())
 
-	respBody, err := z.sendGetRequest(requestPath)
+	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +199,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	return &resp, nil
 }
 
-func (z Zinc) sendGetRequest(requestPath string) ([]byte, error) {
+func (z Zinc) sendGetRequest(requestPath string, timeout time.Duration) ([]byte, error) {
 	httpReq, err := http.NewRequest("GET", requestPath, nil)
 	if err != nil {
 		return nil, err
@@ -174,7 +208,7 @@ func (z Zinc) sendGetRequest(requestPath string) ([]byte, error) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	client := &http.Client{Transport: tr}
+	client := &http.Client{Transport: tr, Timeout: timeout}
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		return nil, err
