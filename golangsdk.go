@@ -52,22 +52,22 @@ type ProductOffersResponse struct {
 }
 
 type ProductOffer struct {
-	Available            bool            `json:"available"`
-	Addon                bool            `json:"addon"`
-	Condition            string          `json:"condition"`
-	ShippingOptions      ShippingOptions `json:"shipping_options"`
-	HandlingDays         HandlingDays    `json:"handling_days"`
-	PrimeOnly            bool            `json:"prime_only"`
-	MarketplaceFulfilled bool            `json:"marketplace_fulfilled"`
-	Currency             string          `json:"currency"`
-	Seller               Seller          `json:"seller"`
-	BuyBoxWinner         bool            `json:"buy_box_winner"`
-	International        bool            `json:"international"`
-	OfferId              string          `json:"offer_id"`
-	Price                int             `json:"price"`
+	Available            bool             `json:"available"`
+	Addon                bool             `json:"addon"`
+	Condition            string           `json:"condition"`
+	ShippingOptions      []ShippingOption `json:"shipping_options"`
+	HandlingDays         HandlingDays     `json:"handling_days"`
+	PrimeOnly            bool             `json:"prime_only"`
+	MarketplaceFulfilled bool             `json:"marketplace_fulfilled"`
+	Currency             string           `json:"currency"`
+	Seller               Seller           `json:"seller"`
+	BuyBoxWinner         bool             `json:"buy_box_winner"`
+	International        bool             `json:"international"`
+	OfferId              string           `json:"offer_id"`
+	Price                int              `json:"price"`
 }
 
-type ShippingOptions struct {
+type ShippingOption struct {
 	Price int `json:"price"`
 }
 
@@ -157,7 +157,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	if !options.NewerThan.IsZero() {
 		values.Set("newer_than", strconv.FormatInt(options.NewerThan.Unix(), 10))
 	}
-	requestPath := fmt.Sprintf("%v/products/%v?%v", z.ZincBaseURL, productId, values.Encode())
+	requestPath := fmt.Sprintf("%v/products/%v/offers?%v", z.ZincBaseURL, productId, values.Encode())
 
 	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
 	if err != nil {
