@@ -97,6 +97,7 @@ type ProductDetailsResponse struct {
 	ProductId          string              `json:"product_id"`
 	MainImage          string              `json:"main_image"`
 	Images             []string            `json:"images"`
+	FeatureBullets     []string            `json:"feature_bullets"`
 }
 
 type ExternalProductId struct {
