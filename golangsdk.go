@@ -96,6 +96,8 @@ type ProductDetailsResponse struct {
 	VariantSpecifics   []VariantSpecific   `json:"variant_specifics"`
 	ProductId          string              `json:"product_id"`
 	MainImage          string              `json:"main_image"`
+	Brand              string              `json:"brand"`
+	MPN                string              `json:"mpn"`
 	Images             []string            `json:"images"`
 	FeatureBullets     []string            `json:"feature_bullets"`
 }
