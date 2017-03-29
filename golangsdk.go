@@ -89,6 +89,7 @@ type ProductDetailsResponse struct {
 	Data               ErrorDataResponse   `json:"data"`
 	Status             string              `json:"status"`
 	ProductDescription string              `json:"product_description"`
+	PostDescription    string              `json:"post_description"`
 	Retailer           string              `json:"retailer"`
 	Epids              []ExternalProductId `json:"epids"`
 	ProductDetails     []string            `json:"product_details"`
