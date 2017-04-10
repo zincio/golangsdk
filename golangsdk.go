@@ -185,7 +185,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
-		return &resp, ZincError{ErrorMessage: "Zinc API returned status 'failed' response=%+v", Data: resp.Data}
+		return &resp, ZincError{ErrorMessage: "Zinc API returned status 'failed'", Data: resp.Data}
 	}
 	return &resp, nil
 }
@@ -210,7 +210,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
-		return &resp, ZincError{ErrorMessage: "Zinc API returned status 'failed' response=%+v", Data: resp.Data}
+		return &resp, ZincError{ErrorMessage: "Zinc API returned status 'failed'", Data: resp.Data}
 	}
 	return &resp, nil
 }
