@@ -123,6 +123,19 @@ type ProductOptions struct {
 	Timeout   time.Duration `json:"timeout"`
 }
 
+type ZincError struct {
+	ErrorMessage string            `json:"error"`
+	Data         ErrorDataResponse `json:"data"`
+}
+
+func (z ZincError) Error() string {
+	return z.ErrorMessage
+}
+
+func SimpleError(errorStr string) ZincError {
+	return ZincError{ErrorMessage: errorStr}
+}
+
 func (z Zinc) GetProductInfo(productId string, retailer Retailer, options ProductOptions) (*ProductOffersResponse, *ProductDetailsResponse, error) {
 	offersChan := make(chan *ProductOffersResponse, 1)
 	detailsChan := make(chan *ProductDetailsResponse, 1)
@@ -165,14 +178,14 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 
 	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
 	if err != nil {
-		return nil, err
+		return nil, SimpleError(err.Error())
 	}
 	var resp ProductOffersResponse
 	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, err
+		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
-		return &resp, fmt.Errorf("Zinc API returned status 'failed' response=%v", resp)
+		return &resp, ZincError{ErrorMessage: "Zinc API returned status 'failed' response=%+v", Data: resp.Data}
 	}
 	return &resp, nil
 }
@@ -190,14 +203,14 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 
 	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
 	if err != nil {
-		return nil, err
+		return nil, SimpleError(err.Error())
 	}
 	var resp ProductDetailsResponse
 	if err := json.Unmarshal(respBody, &resp); err != nil {
-		return nil, err
+		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
-		return &resp, fmt.Errorf("Zinc API returned status 'failed' response=%v", resp)
+		return &resp, ZincError{ErrorMessage: "Zinc API returned status 'failed' response=%+v", Data: resp.Data}
 	}
 	return &resp, nil
 }
