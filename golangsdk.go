@@ -35,6 +35,25 @@ type Zinc struct {
 	ZincBaseURL string
 }
 
+func GetRetailer(retailer string) (Retailer, error) {
+	switch retailer {
+	case "amazon":
+		return Amazon, nil
+	case "amazon_uk":
+		return AmazonUK, nil
+	case "amazon_ca":
+		return AmazonCA, nil
+	case "amazon_mx":
+		return AmazonMX, nil
+	case "walmart":
+		return Walmart, nil
+	case "aliexpress":
+		return Aliexpress, nil
+	default:
+		return Amazon, fmt.Errorf("Invalid retailer string")
+	}
+}
+
 func NewZinc(clientToken string) (*Zinc, error) {
 	z := Zinc{
 		ClientToken: clientToken,
