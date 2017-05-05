@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -114,7 +115,7 @@ type ProductDetailsResponse struct {
 	ProductDetails     []string            `json:"product_details"`
 	Title              string              `json:"title"`
 	VariantSpecifics   []VariantSpecific   `json:"variant_specifics"`
-	ProductId          string              `json:"product_id"`
+	ProductId          json.Number         `json:"product_id"`
 	MainImage          string              `json:"main_image"`
 	Brand              string              `json:"brand"`
 	MPN                string              `json:"mpn"`
@@ -201,6 +202,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	}
 	var resp ProductOffersResponse
 	if err := json.Unmarshal(respBody, &resp); err != nil {
+		log.Printf("[Golangsdk] Unable to unmarshal offers response body=%v", string(respBody))
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -227,6 +229,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	}
 	var resp ProductDetailsResponse
 	if err := json.Unmarshal(respBody, &resp); err != nil {
+		log.Printf("[Golangsdk] Unable to unmarshal details response body=%v", string(respBody))
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
