@@ -139,6 +139,7 @@ type ErrorDataResponse struct {
 
 type ProductOptions struct {
 	MaxAge    int           `json:"max_age"`
+	Priority  int           `json:"priority"`
 	NewerThan time.Time     `json:"newer_than"`
 	Timeout   time.Duration `json:"timeout"`
 }
@@ -220,6 +221,9 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	}
 	if !options.NewerThan.IsZero() {
 		values.Set("newer_than", strconv.FormatInt(options.NewerThan.Unix(), 10))
+	}
+	if options.Priority != 0 {
+		values.Set("priority", strconv.Itoa(options.Priority))
 	}
 	requestPath := fmt.Sprintf("%v/products/%v?%v", z.ZincBaseURL, productId, values.Encode())
 
