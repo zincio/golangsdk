@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -202,8 +203,9 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 		return nil, SimpleError(err.Error())
 	}
 	var resp ProductOffersResponse
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		log.Printf("[Golangsdk] Unable to unmarshal offers response body=%v", string(respBody))
+	cleanedBody := cleanRespBody(respBody)
+	if err := json.Unmarshal(cleanedBody, &resp); err != nil {
+		log.Printf("[Golangsdk] Unable to unmarshal offers response product_id=%v body=%v", productId, string(cleanedBody))
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -232,8 +234,9 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 		return nil, SimpleError(err.Error())
 	}
 	var resp ProductDetailsResponse
-	if err := json.Unmarshal(respBody, &resp); err != nil {
-		log.Printf("[Golangsdk] Unable to unmarshal details response body=%v", string(respBody))
+	cleanedBody := cleanRespBody(respBody)
+	if err := json.Unmarshal(cleanedBody, &resp); err != nil {
+		log.Printf("[Golangsdk] Unable to unmarshal details response product_id=%v body=%v", productId, string(cleanedBody))
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -241,6 +244,15 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 		return &resp, ZincError{ErrorMessage: msg, Data: resp.Data}
 	}
 	return &resp, nil
+}
+
+func cleanRespBody(respBody []byte) []byte {
+	str := string(respBody)
+	i := strings.Index(str, "HTTP/1.1 200 OK")
+	if i == -1 {
+		return respBody
+	}
+	return []byte(str[:i])
 }
 
 func (z Zinc) sendGetRequest(requestPath string, timeout time.Duration) ([]byte, error) {
