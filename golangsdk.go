@@ -204,6 +204,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	}
 	var resp ProductOffersResponse
 	cleanedBody := cleanRespBody(respBody)
+	log.Printf("[Golangsdk] Cleaned product offers body product_id=%v body=%v", productId, string(cleanedBody))
 	if err := json.Unmarshal(cleanedBody, &resp); err != nil {
 		log.Printf("[Golangsdk] Unable to unmarshal offers response product_id=%v body=%v", productId, string(cleanedBody))
 		return nil, SimpleError(err.Error())
@@ -235,6 +236,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	}
 	var resp ProductDetailsResponse
 	cleanedBody := cleanRespBody(respBody)
+	log.Printf("[Golangsdk] Cleaned product details body product_id=%v body=%v", productId, string(cleanedBody))
 	if err := json.Unmarshal(cleanedBody, &resp); err != nil {
 		log.Printf("[Golangsdk] Unable to unmarshal details response product_id=%v body=%v", productId, string(cleanedBody))
 		return nil, SimpleError(err.Error())
