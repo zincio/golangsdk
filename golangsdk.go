@@ -198,14 +198,8 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	}
 	requestPath := fmt.Sprintf("%v/products/%v/offers?%v", z.ZincBaseURL, productId, values.Encode())
 
-	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
-	if err != nil {
-		return nil, SimpleError(err.Error())
-	}
 	var resp ProductOffersResponse
-	cleanedBody := cleanRespBody(respBody)
-	if err := json.Unmarshal(cleanedBody, &resp); err != nil {
-		log.Printf("[Golangsdk] Unable to unmarshal offers response product_id=%v body=%v", productId, string(cleanedBody))
+	if err := z.SendGetRequest(requestPath, options.Timeout, &resp); err != nil {
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -229,14 +223,8 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	}
 	requestPath := fmt.Sprintf("%v/products/%v?%v", z.ZincBaseURL, productId, values.Encode())
 
-	respBody, err := z.sendGetRequest(requestPath, options.Timeout)
-	if err != nil {
-		return nil, SimpleError(err.Error())
-	}
 	var resp ProductDetailsResponse
-	cleanedBody := cleanRespBody(respBody)
-	if err := json.Unmarshal(cleanedBody, &resp); err != nil {
-		log.Printf("[Golangsdk] Unable to unmarshal details response product_id=%v body=%v", productId, string(cleanedBody))
+	if err := z.SendGetRequest(requestPath, options.Timeout, &resp); err != nil {
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -255,24 +243,29 @@ func cleanRespBody(respBody []byte) []byte {
 	return []byte(str[:i])
 }
 
-func (z Zinc) sendGetRequest(requestPath string, timeout time.Duration) ([]byte, error) {
+func (z Zinc) SendGetRequest(requestPath string, timeout time.Duration, resp interface{}) error {
 	httpReq, err := http.NewRequest("GET", requestPath, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	httpReq.SetBasicAuth(z.ClientToken, "")
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr, Timeout: timeout}
-	resp, err := client.Do(httpReq)
+	httpResp, err := client.Do(httpReq)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	defer httpResp.Body.Close()
+	respBody, err := ioutil.ReadAll(httpResp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return respBody, nil
+	cleanedBody := cleanRespBody(respBody)
+	if err := json.Unmarshal(cleanedBody, resp); err != nil {
+		log.Printf("[Golangsdk] Unable to unmarshal response request_path=%v body=%v", requestPath, string(cleanedBody))
+		return SimpleError(err.Error())
+	}
+	return nil
 }
