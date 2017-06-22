@@ -64,6 +64,39 @@ func NewZinc(clientToken string) (*Zinc, error) {
 	return &z, nil
 }
 
+type OrderResponse struct {
+	Type             string            `json:"_type"`
+	Code             string            `json:"code"`
+	Data             ErrorDataResponse `json:"data"`
+	ErrorMessage     string            `json:"message"`
+	PriceComponents  PriceComponents   `json:"price_components"`
+	MerchantOrderIds []MerchantOrderId `json:"merchant_order_ids"`
+	Tracking         []Tracking        `json:"tracking"`
+}
+
+type PriceComponents struct {
+	Shipping int `json:"shipping"`
+	Subtotal int `json:"subtotal"`
+	Tax      int `json:"tax"`
+	Total    int `json:"total"`
+}
+
+type MerchantOrderId struct {
+	MerchantOrderId string    `json:"merchant_order_id"`
+	Merchant        string    `json:"merchant"`
+	Account         string    `json:"account"`
+	PlacedAt        time.Time `json:"placed_at"`
+}
+
+type Tracking struct {
+	MerchantOrderId string    `json:"merchant_order_id"`
+	ObtainedAt      time.Time `json:"obtained_at"`
+	Carrier         string    `json:"carrier"`
+	TrackingNumber  string    `json:"tracking_number"`
+	ProductIds      []string  `json:"product_ids"`
+	TrackingURL     string    `json:"tracking_url"`
+}
+
 type ProductOffersResponse struct {
 	Code     string            `json:"code"`
 	Data     ErrorDataResponse `json:"data"`
