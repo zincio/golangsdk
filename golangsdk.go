@@ -180,6 +180,7 @@ type ProductOptions struct {
 
 type ZincError struct {
 	ErrorMessage string            `json:"error"`
+	Code         string            `json:"code"`
 	Data         ErrorDataResponse `json:"data"`
 }
 
@@ -237,7 +238,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	}
 	if resp.Status == "failed" {
 		msg := fmt.Sprintf("Zinc API returned status 'failed' data=%+v", resp.Data)
-		return &resp, ZincError{ErrorMessage: msg, Data: resp.Data}
+		return &resp, ZincError{Code: resp.Code, ErrorMessage: msg, Data: resp.Data}
 	}
 	return &resp, nil
 }
@@ -262,7 +263,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	}
 	if resp.Status == "failed" {
 		msg := fmt.Sprintf("Zinc API returned status 'failed' data=%+v", resp.Data)
-		return &resp, ZincError{ErrorMessage: msg, Data: resp.Data}
+		return &resp, ZincError{Code: resp.Code, ErrorMessage: msg, Data: resp.Data}
 	}
 	return &resp, nil
 }
