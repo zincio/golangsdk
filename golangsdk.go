@@ -168,7 +168,8 @@ type VariantSpecific struct {
 }
 
 type ErrorDataResponse struct {
-	Message string `json:"message"`
+	Message     string      `json:"message"`
+	AllVariants interface{} `json:"all_variants"`
 }
 
 type ProductOptions struct {
