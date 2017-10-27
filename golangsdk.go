@@ -1,9 +1,11 @@
 package golangsdk
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -290,6 +292,19 @@ func (z Zinc) GetProductInfo(productId string, retailer Retailer, options Produc
 	return offers, details, nil
 }
 
+func (z Zinc) SendOrder(order OrderRequest) (*OrderResponse, error) {
+	requestPath := fmt.Sprintf("%v/orders", z.ZincBaseURL)
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(order); err != nil {
+		return nil, SimpleError(err.Error())
+	}
+	var resp OrderResponse
+	if err := z.SendRequest("POST", requestPath, body, 30, &resp); err != nil {
+		return nil, SimpleError(err.Error())
+	}
+	return &resp, nil
+}
+
 func (z Zinc) GetProductOffers(productId string, retailer Retailer, options ProductOptions) (*ProductOffersResponse, error) {
 	values := url.Values{}
 	values.Set("retailer", string(retailer))
@@ -303,7 +318,7 @@ func (z Zinc) GetProductOffers(productId string, retailer Retailer, options Prod
 	requestPath := fmt.Sprintf("%v/products/%v/offers?%v", z.ZincBaseURL, productId, values.Encode())
 
 	var resp ProductOffersResponse
-	if err := z.SendGetRequest(requestPath, options.Timeout, &resp); err != nil {
+	if err := z.SendRequest("GET", requestPath, nil, options.Timeout, &resp); err != nil {
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -328,7 +343,7 @@ func (z Zinc) GetProductDetails(productId string, retailer Retailer, options Pro
 	requestPath := fmt.Sprintf("%v/products/%v?%v", z.ZincBaseURL, productId, values.Encode())
 
 	var resp ProductDetailsResponse
-	if err := z.SendGetRequest(requestPath, options.Timeout, &resp); err != nil {
+	if err := z.SendRequest("GET", requestPath, nil, options.Timeout, &resp); err != nil {
 		return nil, SimpleError(err.Error())
 	}
 	if resp.Status == "failed" {
@@ -347,8 +362,8 @@ func cleanRespBody(respBody []byte) []byte {
 	return []byte(str[:i])
 }
 
-func (z Zinc) SendGetRequest(requestPath string, timeout time.Duration, resp interface{}) error {
-	httpReq, err := http.NewRequest("GET", requestPath, nil)
+func (z Zinc) SendRequest(method, requestPath string, body io.Reader, timeout time.Duration, resp interface{}) error {
+	httpReq, err := http.NewRequest(method, requestPath, body)
 	if err != nil {
 		return err
 	}
