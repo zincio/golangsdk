@@ -64,7 +64,75 @@ func NewZinc(clientToken string) (*Zinc, error) {
 	return &z, nil
 }
 
+type OrderRequest struct {
+	Retailer            Retailer            `json:"retailer"`
+	Products            []Product           `json:"products"`
+	ShippingMethod      string              `json:"shipping_method,omitempty"`
+	Shipping            Shipping            `json:"shipping,omitempty"`
+	ShippingAddress     Address             `json:"shipping_address"`
+	BillingAddress      Address             `json:"billing_address,omitempty"`
+	PaymentMethod       PaymentMethod       `json:"payment_method,omitempty"`
+	RetailerCredentials RetailerCredentials `json:"retailer_credentials,omitempty"`
+	GiftMessage         string              `json:"gift_message,omitempty"`
+	IsGift              bool                `json:"is_gift"`
+	MaxPrice            int                 `json:"max_price"`
+	Webhooks            Webhooks            `json:"webhooks"`
+	Bundled             bool                `json:"bundled"`
+	Addax               bool                `json:"addax"`
+}
+
+type Product struct {
+	ProductId               string                  `json:"product_id"`
+	Quantity                int                     `json:"quantity"`
+	SellerSelectionCriteria SellerSelectionCriteria `json:"seller_selection_criteria,omitempty"`
+}
+
+type Shipping struct {
+	OrderBy  string `json:"order_by,omitempty"`
+	MaxDays  int    `json:"max_days"`
+	MaxPrice int    `json:"max_price"`
+}
+
+type Address struct {
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	AddressLine1 string `json:"address_line1"`
+	AddressLine2 string `json:"address_line2"`
+	ZipCode      string `json:"zip_code"`
+	City         string `json:"city"`
+	State        string `json:"state"`
+	Country      string `json:"country"`
+	PhoneNumber  string `json:"phone_number"`
+}
+
+type PaymentMethod struct {
+	NameOnCard      string `json:"name_on_card,omitempty"`
+	Number          string `json:"number,omitempty"`
+	SecurityCode    string `json:"security_code,omitempty"`
+	ExpirationMonth int    `json:"expiration_month,omitempty"`
+	ExpirationYear  int    `json:"expiration_year,omitempty"`
+	UseGift         bool   `json:"use_gift"`
+}
+
+type RetailerCredentials struct {
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	VerificationCode string `json:"verification_code,omitempty"`
+}
+
+type Webhooks struct {
+	RequestSucceeded string `json:"request_succeeded"`
+	RequestFailed    string `json:"request_failed"`
+	TrackingObtained string `json:"tracking_obtained"`
+	StatusUpdated    string `json:"status_updated"`
+}
+
+type SellerSelectionCriteria struct {
+	Prime bool `json:"prime"`
+}
+
 type OrderResponse struct {
+	RequestId        string            `json:"request_id"`
 	Type             string            `json:"_type"`
 	Code             string            `json:"code"`
 	Data             ErrorDataResponse `json:"data"`
@@ -72,6 +140,7 @@ type OrderResponse struct {
 	PriceComponents  PriceComponents   `json:"price_components"`
 	MerchantOrderIds []MerchantOrderId `json:"merchant_order_ids"`
 	Tracking         []Tracking        `json:"tracking"`
+	Request          OrderRequest      `json:"request"`
 }
 
 type PriceComponents struct {
