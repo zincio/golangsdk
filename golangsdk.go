@@ -149,7 +149,7 @@ type ProductDetailsResponse struct {
 	ProductDetails     []string            `json:"product_details"`
 	Title              string              `json:"title"`
 	VariantSpecifics   []VariantSpecific   `json:"variant_specifics"`
-	ProductId          json.Number         `json:"product_id"`
+	ProductId          string              `json:"product_id"`
 	MainImage          string              `json:"main_image"`
 	Brand              string              `json:"brand"`
 	MPN                string              `json:"mpn"`
