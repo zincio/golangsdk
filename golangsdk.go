@@ -67,26 +67,26 @@ func NewZinc(clientToken string) (*Zinc, error) {
 }
 
 type OrderRequest struct {
-	Retailer            Retailer            `json:"retailer"`
-	Products            []Product           `json:"products"`
-	ShippingMethod      string              `json:"shipping_method,omitempty"`
-	Shipping            Shipping            `json:"shipping,omitempty"`
-	ShippingAddress     Address             `json:"shipping_address"`
-	BillingAddress      Address             `json:"billing_address,omitempty"`
-	PaymentMethod       PaymentMethod       `json:"payment_method,omitempty"`
-	RetailerCredentials RetailerCredentials `json:"retailer_credentials,omitempty"`
-	GiftMessage         string              `json:"gift_message,omitempty"`
-	IsGift              bool                `json:"is_gift"`
-	MaxPrice            int                 `json:"max_price"`
-	Webhooks            Webhooks            `json:"webhooks"`
-	Bundled             bool                `json:"bundled"`
-	Addax               bool                `json:"addax"`
+	Retailer            Retailer             `json:"retailer"`
+	Products            []Product            `json:"products"`
+	ShippingMethod      string               `json:"shipping_method,omitempty"`
+	Shipping            *Shipping            `json:"shipping,omitempty"`
+	ShippingAddress     *Address             `json:"shipping_address"`
+	BillingAddress      *Address             `json:"billing_address,omitempty"`
+	PaymentMethod       *PaymentMethod       `json:"payment_method,omitempty"`
+	RetailerCredentials *RetailerCredentials `json:"retailer_credentials,omitempty"`
+	GiftMessage         string               `json:"gift_message,omitempty"`
+	IsGift              bool                 `json:"is_gift"`
+	MaxPrice            int                  `json:"max_price"`
+	Webhooks            *Webhooks            `json:"webhooks,omitempty"`
+	Bundled             bool                 `json:"bundled"`
+	Addax               bool                 `json:"addax"`
 }
 
 type Product struct {
-	ProductId               string                  `json:"product_id"`
-	Quantity                int                     `json:"quantity"`
-	SellerSelectionCriteria SellerSelectionCriteria `json:"seller_selection_criteria,omitempty"`
+	ProductId               string                   `json:"product_id"`
+	Quantity                int                      `json:"quantity"`
+	SellerSelectionCriteria *SellerSelectionCriteria `json:"seller_selection_criteria,omitempty"`
 }
 
 type Shipping struct {
@@ -304,7 +304,7 @@ func (z Zinc) SendOrder(order OrderRequest) (*OrderResponse, error) {
 		return nil, SimpleError(err.Error())
 	}
 	var resp OrderResponse
-	if err := z.SendRequest("POST", requestPath, body, 30, &resp); err != nil {
+	if err := z.SendRequest("POST", requestPath, body, time.Duration(time.Second*30), &resp); err != nil {
 		return nil, SimpleError(err.Error())
 	}
 	return &resp, nil
