@@ -239,8 +239,13 @@ type VariantSpecific struct {
 }
 
 type ErrorDataResponse struct {
-	Message     string      `json:"message"`
-	AllVariants interface{} `json:"all_variants"`
+	Message     string    `json:"message"`
+	AllVariants []Variant `json:"all_variants"`
+}
+
+type Variant struct {
+	VariantSpecifics []VariantSpecific `json:"variant_specifics"`
+	ProductId        string            `json:"product_id"`
 }
 
 type ProductOptions struct {
