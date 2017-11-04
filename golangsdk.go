@@ -239,8 +239,15 @@ type VariantSpecific struct {
 }
 
 type ErrorDataResponse struct {
-	Message     string    `json:"message"`
-	AllVariants []Variant `json:"all_variants"`
+	Message         string           `json:"message"`
+	ValidatorErrors []ValidatorError `json:"validator_errors"`
+	AllVariants     []Variant        `json:"all_variants"`
+}
+
+type ValidatorError struct {
+	Message string `json:"message"`
+	Path    string `json:"path"`
+	Value   string `json:"value"`
 }
 
 type Variant struct {
