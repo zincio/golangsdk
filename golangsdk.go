@@ -134,15 +134,15 @@ type SellerSelectionCriteria struct {
 }
 
 type OrderResponse struct {
-	RequestId        string            `json:"request_id"`
-	Type             string            `json:"_type"`
-	Code             string            `json:"code"`
-	Data             ErrorDataResponse `json:"data"`
-	ErrorMessage     string            `json:"message"`
-	PriceComponents  PriceComponents   `json:"price_components"`
-	MerchantOrderIds []MerchantOrderId `json:"merchant_order_ids"`
-	Tracking         []Tracking        `json:"tracking"`
-	Request          OrderRequest      `json:"request"`
+	RequestId        string             `json:"request_id"`
+	Type             string             `json:"_type"`
+	Code             string             `json:"code"`
+	Data             *ErrorDataResponse `json:"data,omitempty"`
+	ErrorMessage     string             `json:"message"`
+	PriceComponents  *PriceComponents   `json:"price_components,omitempty"`
+	MerchantOrderIds []MerchantOrderId  `json:"merchant_order_ids"`
+	Tracking         []Tracking         `json:"tracking"`
+	Request          *OrderRequest      `json:"request,omitempty"`
 }
 
 type PriceComponents struct {
