@@ -86,6 +86,7 @@ type OrderRequest struct {
 type Product struct {
 	ProductId               string                   `json:"product_id"`
 	Quantity                int                      `json:"quantity"`
+	Fresh                   bool                     `json:"fresh"`
 	SellerSelectionCriteria *SellerSelectionCriteria `json:"seller_selection_criteria,omitempty"`
 }
 
