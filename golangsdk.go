@@ -121,6 +121,7 @@ type RetailerCredentials struct {
 	Email            string `json:"email"`
 	Password         string `json:"password"`
 	VerificationCode string `json:"verification_code,omitempty"`
+	Totp2FAKey       string `json:"totp_2fa_key"`
 }
 
 type Webhooks struct {
