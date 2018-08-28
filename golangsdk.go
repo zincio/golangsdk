@@ -35,7 +35,8 @@ var DefaultProductOptions = ProductOptions{
 }
 
 type Zinc struct {
-	ClientToken string
+	ZincUser string
+	ZincPassword string
 	ZincBaseURL string
 }
 
@@ -58,10 +59,11 @@ func GetRetailer(retailer string) (Retailer, error) {
 	}
 }
 
-func NewZinc(clientToken string) (*Zinc, error) {
+func NewZinc(zincUser string, zincPassword string) (*Zinc, error) {
 	z := Zinc{
-		ClientToken: clientToken,
-		ZincBaseURL: zincBaseURL,
+		ZincUser:		  zincUser,
+		ZincPassword: zincPassword,
+		ZincBaseURL:  zincBaseURL,
 	}
 	return &z, nil
 }
@@ -381,7 +383,7 @@ func (z Zinc) SendRequest(method, requestPath string, body io.Reader, timeout ti
 	if err != nil {
 		return err
 	}
-	httpReq.SetBasicAuth(z.ClientToken, "")
+	httpReq.SetBasicAuth(z.ZincUser, z.ZincPassword)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
